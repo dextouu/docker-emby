@@ -1,16 +1,16 @@
 FROM xataz/mono:5
 
-ARG MEDIAINFO_VER=0.7.99
-ARG EMBY_VER=3.5.2.0
+LABEL author="dextou"
 
 ENV GID=991 \
     UID=991 \
     PREMIERE=false
 
-LABEL description="Emby based on alpine" \
-      tags="latest 3.5.2.0 3.5.0.0 3.5.0 3.5 3" \
-      maintainer="xataz <https://github.com/xataz>" \
-      build_ver="201808111603"
+ARG MEDIAINFO_VER=0.7.99
+ARG BUILD_DATE
+ARG VERSION
+LABEL build_version="Version:- ${VERSION} Build-date:- ${BUILD_DATE}"
+
 
 RUN export BUILD_DEPS="build-base \
                         git \
@@ -39,7 +39,9 @@ RUN export BUILD_DEPS="build-base \
     && cd /tmp/MediaInfo_CLI_GNU_FromSource/MediaInfo/Project/GNU/CLI \
     && make install \
     && mkdir /embyServer /embyData \
-    && wget https://github.com/MediaBrowser/Emby/releases/download/${EMBY_VER}/Emby.Mono.zip -O /tmp/Emby.Mono.zip \
+    &&  emby_tag=$(curl -sX GET "https://api.github.com/repos/MediaBrowser/Emby/releases/latest" \
+	| awk '/tag_name/{print $4;exit}' FS='[""]') \
+    && wget https://github.com/MediaBrowser/Emby/releases/download/$emby_tag/Emby.Mono.zip -O /tmp/Emby.Mono.zip \
     && ln -s /usr/lib/libsqlite3.so.0 /usr/lib/libsqlite3.so \
     && unzip /tmp/Emby.Mono.zip -d /embyServer \
     && apk del --no-cache $BUILD_DEPS \
