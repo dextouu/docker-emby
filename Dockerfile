@@ -5,7 +5,7 @@ ENV GID=991 \
 
 LABEL description="Emby based on alpine and netcore nightly" \
       tags="latest" \
-      maintainer="kanjusei <https://github.com/kanjusei>" 
+      maintainer="dextou" 
 
 RUN export BUILD_DEPS="build-base \
                         git \
